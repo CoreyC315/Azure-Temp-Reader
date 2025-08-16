@@ -1,9 +1,11 @@
 Use your raspberry pi and make sure it is fully updated and upgraded.
 
+First make a virtual enviorment for your PI.
+
 Use these libraries. Make sure they are downloaded for the script.
 
 ```bash
-SCRIPT HERE
+pip install RPi.GPIO dht11 azure-iot-device
 ```
 
 make sure that your dht11 sensor is connected properlly.
@@ -122,8 +124,16 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+I will not work just yet because we are going to need a connection string to connect to the Azure IoT hub.
 
-
-
-Set up your Azure IoT hub
+Set up your Azure IoT hub like this.
 <img width="960" height="1020" alt="image" src="https://github.com/user-attachments/assets/117fca09-3ee4-459b-bd4c-e82ca6f88e7e" />
+
+Once it is deployed, add a device.
+
+Go to Device Managment >> Devices and add one and call it raspberrypi-dht11.
+
+Get the primary connection string and add it to the code where the connection string variable is.
+
+<img width="1920" height="1140" alt="image" src="https://github.com/user-attachments/assets/2fed00b4-2c69-4601-a853-1e9784e9c7a7" />
+
