@@ -29,6 +29,9 @@ We are going to need this becuase we are going off of the event of when our IoT 
 # Name it this
 <img width="775" height="78" alt="image" src="https://github.com/user-attachments/assets/2e9aa01a-a3b3-4e4a-bf10-48474dfb7fc6" />
 
+# Should look like this when finished
+<img width="1912" height="1035" alt="image" src="https://github.com/user-attachments/assets/8f242a49-e2ba-40f0-b0ae-877d0c87dace" />
+
 # Name the next part this
 <img width="751" height="107" alt="image" src="https://github.com/user-attachments/assets/38c2b018-cead-4bc5-b2dc-fd67d6722d5f" />
 
