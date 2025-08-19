@@ -1,4 +1,4 @@
-# First lets make a Function App
+# First lets make an Event Hub
 
 I prefer to make it through VS codes portal becuase it sets up a template that will help us later
 
