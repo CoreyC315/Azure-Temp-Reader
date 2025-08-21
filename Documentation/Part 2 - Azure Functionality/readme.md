@@ -38,4 +38,15 @@ We are going to need this becuase we are going off of the event of when our IoT 
 # Should look like this when finished
 <img width="1912" height="1035" alt="image" src="https://github.com/user-attachments/assets/8f242a49-e2ba-40f0-b0ae-877d0c87dace" />
 
+# Next go to your IoT hub and go to Message Routing.
+
+<img width="1764" height="878" alt="image" src="https://github.com/user-attachments/assets/dca9c859-55d6-4cdd-a456-9a7cb19fba93" />
+
+Create a routing path to your event hub.
+
+Now you should be reciving messages to your Event Hub
+
+<img width="1754" height="1200" alt="image" src="https://github.com/user-attachments/assets/0cc925d0-9370-4c5c-872b-742b8c11c50a" />
+
+Next up create an Azure Cosmos Database.
 
