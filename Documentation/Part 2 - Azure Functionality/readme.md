@@ -56,7 +56,28 @@ These are the settings I used
 
 <img width="1920" height="1140" alt="Screenshot 2025-08-16 153134" src="https://github.com/user-attachments/assets/8185b61c-8f23-4b8d-a04b-5f6fd685d4c8" />
 
-Now that we have those running you should have 3 resources.
+Now open the Azure Cosmos DB in Data Explorer
 
-<img width="1709" height="1132" alt="Screenshot 2025-08-18 145050" src="https://github.com/user-attachments/assets/0ebd7a07-0a4c-43e2-92e4-f47778a07bb5" />
+<img width="1711" height="1561" alt="Screenshot 2025-08-19 115008" src="https://github.com/user-attachments/assets/39b13038-4f1f-46ef-b0c7-9d453edfe161" />
 
+These are the settings I used for the Database. I made a change to the code where I changed the name to 
+```bash
+"WeatherReadingDb"
+```
+ Not 
+ 
+ ```bash
+"WeatherReadingsDb"
+```
+
+Once made, go into your Keys so that we can give permission to your function to add data to the table we just made
+
+<img width="1711" height="1561" alt="Screenshot 2025-08-19 122917" src="https://github.com/user-attachments/assets/1ff921ef-e2a1-42f8-953c-1c9ca9a52dda" />
+
+Add the string to CosmosDbConnection in your local.settings.json file.
+
+Now that the connections are working you should be able to run the function locally using
+
+```bash
+func start
+```
