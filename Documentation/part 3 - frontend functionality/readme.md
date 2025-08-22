@@ -3,3 +3,4 @@
 Create a SignalR in Azure
 These are the settings I used
 <img width="1642" height="1250" alt="image" src="https://github.com/user-attachments/assets/bc337736-a9a4-40e2-a223-28920d2817b2" />
+
