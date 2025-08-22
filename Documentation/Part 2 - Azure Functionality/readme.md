@@ -48,5 +48,15 @@ Now you should be reciving messages to your Event Hub
 
 <img width="1754" height="1200" alt="image" src="https://github.com/user-attachments/assets/0cc925d0-9370-4c5c-872b-742b8c11c50a" />
 
-Next up create an Azure Cosmos Database.
+# Next up create an Azure Cosmos Database.
+I used nosql becuase I found that eaiser to do.
+<img width="1920" height="1140" alt="Screenshot 2025-08-16 152137" src="https://github.com/user-attachments/assets/7bb4e919-d03a-4133-8949-3140f009051d" />
+
+These are the settings I used
+
+<img width="1920" height="1140" alt="Screenshot 2025-08-16 153134" src="https://github.com/user-attachments/assets/8185b61c-8f23-4b8d-a04b-5f6fd685d4c8" />
+
+Now that we have those running you should have 3 resources.
+
+<img width="1709" height="1132" alt="Screenshot 2025-08-18 145050" src="https://github.com/user-attachments/assets/0ebd7a07-0a4c-43e2-92e4-f47778a07bb5" />
 
