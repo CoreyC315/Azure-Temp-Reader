@@ -38,4 +38,46 @@ We are going to need this becuase we are going off of the event of when our IoT 
 # Should look like this when finished
 <img width="1912" height="1035" alt="image" src="https://github.com/user-attachments/assets/8f242a49-e2ba-40f0-b0ae-877d0c87dace" />
 
+# Next go to your IoT hub and go to Message Routing.
 
+<img width="1764" height="878" alt="image" src="https://github.com/user-attachments/assets/dca9c859-55d6-4cdd-a456-9a7cb19fba93" />
+
+Create a routing path to your event hub.
+
+Now you should be reciving messages to your Event Hub
+
+<img width="1754" height="1200" alt="image" src="https://github.com/user-attachments/assets/0cc925d0-9370-4c5c-872b-742b8c11c50a" />
+
+# Next up create an Azure Cosmos Database.
+I used nosql becuase I found that eaiser to do.
+<img width="1920" height="1140" alt="Screenshot 2025-08-16 152137" src="https://github.com/user-attachments/assets/7bb4e919-d03a-4133-8949-3140f009051d" />
+
+These are the settings I used
+
+<img width="1920" height="1140" alt="Screenshot 2025-08-16 153134" src="https://github.com/user-attachments/assets/8185b61c-8f23-4b8d-a04b-5f6fd685d4c8" />
+
+Now open the Azure Cosmos DB in Data Explorer
+
+<img width="1711" height="1561" alt="Screenshot 2025-08-19 115008" src="https://github.com/user-attachments/assets/39b13038-4f1f-46ef-b0c7-9d453edfe161" />
+
+These are the settings I used for the Database. I made a change to the code where I changed the name to 
+```bash
+"WeatherReadingDb"
+```
+ Not 
+ 
+ ```bash
+"WeatherReadingsDb"
+```
+
+Once made, go into your Keys so that we can give permission to your function to add data to the table we just made
+
+<img width="1711" height="1561" alt="Screenshot 2025-08-19 122917" src="https://github.com/user-attachments/assets/1ff921ef-e2a1-42f8-953c-1c9ca9a52dda" />
+
+Add the string to CosmosDbConnection in your local.settings.json file.
+
+Now that the connections are working you should be able to run the function locally using
+
+```bash
+func start
+```
