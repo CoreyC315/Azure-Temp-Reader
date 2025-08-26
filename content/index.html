@@ -1,70 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Temperature and Humidity Stream</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Weather Stream</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Real-time Temperature and Humidity Data</h1>
-    <p>Connecting to SignalR...</p>
-    <div id="data-display">
-        <p><strong>Device ID:</strong> <span id="deviceId">N/A</span></p>
-        <p><strong>Temperature:</strong> <span id="temperature">N/A</span> °C</p>
-        <p><strong>Humidity:</strong> <span id="humidity">N/A</span> %</p>
+    <div class="container">
+        <header>
+            <h1>Real-time Weather Dashboard</h1>
+            <p id="status-message">Connecting to SignalR and fetching historical data...</p>
+        </header>
+
+        <main>
+            <section class="current-data">
+                <h2>Current Data</h2>
+                <div class="data-card">
+                    <p><strong>Device ID:</strong> <span id="deviceId">N/A</span></p>
+                    <p><strong>Temperature:</strong> <span id="temperature">N/A</span> °C</p>
+                    <p><strong>Humidity:</strong> <span id="humidity">N/A</span> %</p>
+                </div>
+            </section>
+
+            <section class="historical-data">
+                <h2>Historical Temperature</h2>
+                <div class="chart-container">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+            </section>
+        </main>
     </div>
 
+    <!-- Include the SignalR client-side library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-    
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        const API_BASE_URL = "http://localhost:7071/api";
+        const API_BASE_URL = "https://tempreaderfa-c8f4djd9etemezdy.eastus2-01.azurewebsites.net/api";
         const HUB_NAME = "tempstream";
+        const DEFAULT_DEVICE_ID = "raspberrypi-dht11";
+
+        let chart;
+
+        async function fetchHistoricalData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/historicalData?deviceId=${DEFAULT_DEVICE_ID}`);
+                const data = await response.json();
+                data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+                const labels = data.map(item => new Date(item.timestamp).toLocaleTimeString());
+                const temperatures = data.map(item => item.temperature_c);
+
+                return { labels, temperatures };
+            } catch (error) {
+                console.error("Failed to fetch historical data:", error);
+                return { labels: [], temperatures: [] };
+            }
+        }
+
+        function initChart(labels, temperatures) {
+            const ctx = document.getElementById('temperatureChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: temperatures,
+                        borderColor: '#1e88e5', // Blue color
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         async function startSignalRConnection() {
             try {
-                // 1. Get the connection info from the negotiate endpoint.
                 const negotiateResponse = await fetch(`${API_BASE_URL}/negotiate`, {
                     method: 'POST',
                 });
-
-                if (!negotiateResponse.ok) {
-                    throw new Error(`Negotiate failed with status: ${negotiateResponse.status}`);
-                }
-
                 const connectionInfo = await negotiateResponse.json();
 
-                // 2. Initialize the SignalR connection using the connection info.
                 const connection = new signalR.HubConnectionBuilder()
                     .withUrl(connectionInfo.url, { accessTokenFactory: () => connectionInfo.accessToken })
                     .build();
 
-                // 3. Register the handler for the 'newMessage' target.
-                // The 'BroadcastSignalR' function sends messages to this target.
                 connection.on('newMessage', (message) => {
-                    console.log("Received a new message:", message);
-                    try {
-                        const data = JSON.parse(message);
-                        document.getElementById('deviceId').innerText = data.deviceId;
-                        document.getElementById('temperature').innerText = data.temperature_c;
-                        document.getElementById('humidity').innerText = data.humidity;
-                    } catch (e) {
-                        console.error("Failed to parse message JSON:", e);
+                    const data = JSON.parse(message);
+                    
+                    document.getElementById('deviceId').innerText = data.deviceId;
+                    document.getElementById('temperature').innerText = data.temperature_c;
+                    document.getElementById('humidity').innerText = data.humidity;
+
+                    if (chart) {
+                        const time = new Date().toLocaleTimeString();
+                        chart.data.labels.push(time);
+                        chart.data.datasets[0].data.push(data.temperature_c);
+                        
+                        const maxPoints = 50;
+                        if (chart.data.labels.length > maxPoints) {
+                            chart.data.labels.shift();
+                            chart.data.datasets[0].data.shift();
+                        }
+                        
+                        chart.update();
                     }
                 });
 
-                // 4. Start the connection.
                 await connection.start();
                 console.log("SignalR connection established successfully.");
-
-                document.getElementById('data-display').style.display = 'block';
-                document.querySelector('p').innerText = "Connected! Waiting for data...";
-
+                document.getElementById('status-message').innerText = "Connected! Waiting for data...";
             } catch (error) {
                 console.error("SignalR connection failed:", error);
-                document.querySelector('p').innerText = "Connection failed. Check console for details.";
+                document.getElementById('status-message').innerText = "Connection failed. Check console for details.";
             }
         }
 
-        // Start the connection when the page loads
-        document.addEventListener('DOMContentLoaded', startSignalRConnection);
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('status-message').innerText = "Connecting...";
+
+            const { labels, temperatures } = await fetchHistoricalData();
+            initChart(labels, temperatures);
+            
+            startSignalRConnection();
+        });
 
     </script>
 </body>
