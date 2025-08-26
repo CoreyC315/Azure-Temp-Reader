@@ -4,3 +4,5 @@
 
 azure-functions
 azurefunctions-extensions-bindings-eventhub
+azure-eventhub
+azure-functions-signalrservice
