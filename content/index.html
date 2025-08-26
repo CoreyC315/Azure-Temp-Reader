@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Temperature and Humidity Stream</title>
+</head>
+<body>
+    <h1>Real-time Temperature and Humidity Data</h1>
+    <p>Connecting to SignalR...</p>
+    <div id="data-display">
+        <p><strong>Device ID:</strong> <span id="deviceId">N/A</span></p>
+        <p><strong>Temperature:</strong> <span id="temperature">N/A</span> °C</p>
+        <p><strong>Humidity:</strong> <span id="humidity">N/A</span> %</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    
+    <script>
+        const API_BASE_URL = "http://localhost:7071/api";
+        const HUB_NAME = "tempstream";
+
+        async function startSignalRConnection() {
+            try {
+                // 1. Get the connection info from the negotiate endpoint.
+                const negotiateResponse = await fetch(`${API_BASE_URL}/negotiate`, {
+                    method: 'POST',
+                });
+
+                if (!negotiateResponse.ok) {
+                    throw new Error(`Negotiate failed with status: ${negotiateResponse.status}`);
+                }
+
+                const connectionInfo = await negotiateResponse.json();
+
+                // 2. Initialize the SignalR connection using the connection info.
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl(connectionInfo.url, { accessTokenFactory: () => connectionInfo.accessToken })
+                    .build();
+
+                // 3. Register the handler for the 'newMessage' target.
+                // The 'BroadcastSignalR' function sends messages to this target.
+                connection.on('newMessage', (message) => {
+                    console.log("Received a new message:", message);
+                    try {
+                        const data = JSON.parse(message);
+                        document.getElementById('deviceId').innerText = data.deviceId;
+                        document.getElementById('temperature').innerText = data.temperature_c;
+                        document.getElementById('humidity').innerText = data.humidity;
+                    } catch (e) {
+                        console.error("Failed to parse message JSON:", e);
+                    }
+                });
+
+                // 4. Start the connection.
+                await connection.start();
+                console.log("SignalR connection established successfully.");
+
+                document.getElementById('data-display').style.display = 'block';
+                document.querySelector('p').innerText = "Connected! Waiting for data...";
+
+            } catch (error) {
+                console.error("SignalR connection failed:", error);
+                document.querySelector('p').innerText = "Connection failed. Check console for details.";
+            }
+        }
+
+        // Start the connection when the page loads
+        document.addEventListener('DOMContentLoaded', startSignalRConnection);
+
+    </script>
+</body>
+</html>
