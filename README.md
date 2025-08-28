@@ -1,6 +1,6 @@
 # 🌐 IoT Environmental Monitoring Pipeline (Azure)
 
-![Architecture Diagram](./Exported-Diagram.png)
+
 
 ## 📌 Overview
 This project demonstrates an **end-to-end IoT data pipeline** built with Azure cloud services.  
@@ -30,7 +30,7 @@ The solution showcases **cloud engineering fundamentals** including device-to-cl
 ---
 
 ## 🛠️ Technologies Used
-- **Hardware:** Raspberry Pi, DHT11 sensor  
+- **Hardware:** Raspberry Pi 4, DHT11 sensor  
 - **Azure Services:** IoT Hub, Event Hub, Functions, Cosmos DB, SignalR, Storage (Static Websites)  
 - **Languages:** Python (for Pi scripts), JavaScript/HTML (frontend), C#/Python (Azure Functions)  
 
@@ -50,7 +50,6 @@ At a high level:
 ## 📚 Future Improvements
 - Add **Terraform scripts** to provision the full pipeline automatically.  
 - Extend the dashboard with **charts/graphs** (e.g., Plotly, Chart.js).  
-- Integrate with **Power BI** for richer analytics.  
 - Expand to multiple devices with authentication & role-based access.  
 
 ---
