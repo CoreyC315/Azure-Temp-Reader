@@ -19,6 +19,9 @@ The solution showcases **cloud engineering fundamentals** including device-to-cl
 6. **Azure SignalR Service** → Pushes live updates to connected clients.  
 7. **Azure Storage (Static Website)** → Hosts a frontend dashboard to display live and recent readings.  
 
+<img width="2823" height="847" alt="Exported-Diagram (1)" src="https://github.com/user-attachments/assets/b23f8336-bcf0-45f3-bb96-b0cbb86d5d26" />
+
+
 ---
 
 ## ✨ Features
