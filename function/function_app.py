@@ -4,6 +4,7 @@ import json
 import azurefunctions.extensions.bindings.eventhub as eh
 import datetime
 import uuid
+import azure.cosmos.cosmos_client as cosmos_client
 
 # Create the Function App instance
 app = func.FunctionApp()
@@ -64,6 +65,28 @@ def EventHubProcessor(azeventhub: eh.EventData, signalrMessages: func.Out[str], 
     signalrMessages.set(json.dumps(signalr_message))
     logging.info('Broadcasting Event Hub message to SignalR: %s', signalr_message)
 
-# You can keep your historical data function here if you are using it.
-# @app.route(route="historicalData", ... )
-# ...
+@app.route(route="historicalData", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET"])
+@app.cosmos_db_input(arg_name="documents", database_name="WeatherReadingDb",
+                     container_name="TemperatureData_v2", connection="CosmosDbConnection",
+                     sql_query="SELECT c.temperature_c, c.timestamp, c.deviceId, c.humidity FROM c WHERE c.deviceId = {deviceId} ORDER BY c.timestamp DESC OFFSET 0 LIMIT 10")
+def historicalData(req: func.HttpRequest, documents: func.DocumentList) -> func.HttpResponse:
+    """
+    HTTP-triggered function that retrieves the 10 latest data points from Cosmos DB
+    for a specified deviceId and returns them as a JSON array.
+    """
+    logging.info('Python HTTP trigger function processed a request for historicalData.')
+
+    deviceId = req.params.get('deviceId')
+    if not deviceId:
+        return func.HttpResponse(
+             "Please pass a deviceId on the query string",
+             status_code=400
+        )
+    
+    # Convert Document objects to a list of dictionaries.
+    historical_data = [doc.to_dict() for doc in documents]
+    
+    return func.HttpResponse(
+        json.dumps(historical_data),
+        mimetype="application/json"
+    )

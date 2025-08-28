@@ -5,3 +5,4 @@
 azure-functions
 azurefunctions-extensions-bindings-eventhub
 azure-eventhub
+azure-cosmos
