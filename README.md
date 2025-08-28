@@ -40,7 +40,7 @@ The solution showcases **cloud engineering fundamentals** including device-to-cl
 ---
 
 ## 🚀 Getting Started
-> Detailed setup instructions, deployment steps, and prerequisites are provided in the [Setup Guide](./SETUP.md) (coming soon).  
+> Detailed setup instructions, deployment steps, and prerequisites are provided in the Documentation folder in the root.
 At a high level:  
 1. Configure Raspberry Pi to send DHT11 readings to Azure IoT Hub.  
 2. Deploy Event Hub + Function App in Azure.  
