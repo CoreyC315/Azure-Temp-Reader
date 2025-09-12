@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "AZURE_WEB_JOBS_STORAGE",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "TempReader_RootManageSharedAccessKey_EVENTHUB": "ROOT_ACCESS_KEY_HERE",
+    "CosmosDbConnection": "COSMOS_DB_CONNECTION_STRING_HERE",
+    "AzureSignalRConnection": "AZURE_SIGNALR_CONNECTIONSTRING_HERE"
+  },
+  "Host": {
+    "CORS": "*"
+  }
+}
