@@ -5,12 +5,19 @@ import azurefunctions.extensions.bindings.eventhub as eh
 import datetime
 import uuid
 import azure.cosmos.cosmos_client as cosmos_client
+import os
 
 # Create the Function App instance
 app = func.FunctionApp()
 
-@app.route(route="negotiate", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST"])
-@app.generic_input_binding(arg_name="connectionInfo", type="signalRConnectionInfo", hubName="tempstream", connectionStringSetting="AzureSignalRConnection")
+@app.route(route="negotiate", 
+           auth_level=func.AuthLevel.ANONYMOUS, 
+           methods=["POST"])
+
+@app.generic_input_binding(arg_name="connectionInfo", 
+                           type="signalRConnectionInfo", 
+                           hubName="tempstream", 
+                           connectionStringSetting="SignalRConnectionString")
 def negotiate(req: func.HttpRequest, connectionInfo) -> func.HttpResponse:
     """
     HTTP-triggered function that provides connection info for SignalR clients.
@@ -20,21 +27,30 @@ def negotiate(req: func.HttpRequest, connectionInfo) -> func.HttpResponse:
     return func.HttpResponse(connectionInfo, mimetype="application/json")
 
 
-@app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="temp-reader-d72e3d957e",
-                              connection="TempReader_RootManageSharedAccessKey_EVENTHUB",
-                              consumer_group="$Default")
-@app.generic_output_binding(arg_name="signalrMessages", type="signalR", hubName="tempstream", connectionStringSetting="AzureSignalRConnection")
-@app.cosmos_db_output(arg_name="outputDocument", database_name="WeatherReadingDb",
-                      container_name="TemperatureData_v2", connection="CosmosDbConnection",
-                      create_if_not_exists=True, partition_key="/deviceId")
+@app.event_hub_message_trigger(arg_name="azeventhub", 
+                               event_hub_name=os.getenv("EventHubName"),    #"temp-reader-d72e3d957e",
+                               connection="TempReader_RootManageSharedAccessKey_EVENTHUB",
+                               consumer_group="$Default")
+@app.generic_output_binding(arg_name="signalrMessages", 
+                            type="signalR", 
+                            hubName="tempstream", 
+                            connectionStringSetting="SignalRConnectionString")
+@app.cosmos_db_output(arg_name="outputDocument", 
+                      database_name=os.getenv("CosmosDbDatabaseName"),    #"WeatherReadingDb",
+                      container_name=os.getenv("CosmosDbContainerName"),     #"TemperatureData_v2", 
+                      connection="CosmosDbConnection",     #"CosmosDbConnection",
+                      create_if_not_exists=True, 
+                      partition_key="/deviceId")
 def EventHubProcessor(azeventhub: eh.EventData, signalrMessages: func.Out[str], outputDocument: func.Out[func.Document]):
     """
     Reads data from the Event Hub, writes it to Cosmos DB, and broadcasts it to SignalR clients.
     """
-    logging.info('Python EventHub trigger processed an event: %s',
-                 azeventhub.body_as_str())
-
-    # Get the incoming message as a JSON object
+    logging.info('Python EventHub trigger processed an event: %s', azeventhub.body_as_str())
+    
+    # Log environment variables to confirm bindings are configured
+    logging.info(f"Cosmos DB Database Name: {os.getenv('CosmosDbDatabaseName')}")
+    logging.info(f"Cosmos DB Container Name: {os.getenv('CosmosDbContainerName')}")
+    
     try:
         data = json.loads(azeventhub.body_as_str())
     except json.JSONDecodeError:
@@ -50,9 +66,12 @@ def EventHubProcessor(azeventhub: eh.EventData, signalrMessages: func.Out[str], 
     
     if 'deviceId' not in data:
         logging.error("The incoming event payload does not contain the 'deviceId' key. The document will not be saved to Cosmos DB.")
-        # You can choose to still broadcast the message even if the deviceId is missing.
     else:
         data['id'] = f"{data['deviceId']}-{str(uuid.uuid4())}"
+        
+        # Log the document data before setting it
+        logging.info(f"Document to be written: {data}")
+        
         outputDocument.set(func.Document.from_dict(data))
         logging.info("Document successfully set for Cosmos DB.")
 
@@ -65,9 +84,13 @@ def EventHubProcessor(azeventhub: eh.EventData, signalrMessages: func.Out[str], 
     signalrMessages.set(json.dumps(signalr_message))
     logging.info('Broadcasting Event Hub message to SignalR: %s', signalr_message)
 
-@app.route(route="historicalData", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET"])
-@app.cosmos_db_input(arg_name="documents", database_name="WeatherReadingDb",
-                     container_name="TemperatureData_v2", connection="CosmosDbConnection",
+@app.route(route="historicalData", 
+           auth_level=func.AuthLevel.ANONYMOUS, 
+           methods=["GET"])
+@app.cosmos_db_input(arg_name="documents", 
+                     database_name=os.getenv("CosmosDbDatabaseName"),
+                     container_name=os.getenv("CosmosDbContainerName"), 
+                     connection="CosmosDbConnection",
                      sql_query="SELECT c.temperature_c, c.timestamp, c.deviceId, c.humidity FROM c WHERE c.deviceId = {deviceId} ORDER BY c.timestamp DESC OFFSET 0 LIMIT 10")
 def historicalData(req: func.HttpRequest, documents: func.DocumentList) -> func.HttpResponse:
     """
@@ -83,7 +106,6 @@ def historicalData(req: func.HttpRequest, documents: func.DocumentList) -> func.
              status_code=400
         )
     
-    # Convert Document objects to a list of dictionaries.
     historical_data = [doc.to_dict() for doc in documents]
     
     return func.HttpResponse(
