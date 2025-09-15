@@ -42,11 +42,19 @@ The solution showcases **cloud engineering fundamentals** including device-to-cl
 ## 🚀 Getting Started
 > Detailed setup instructions, deployment steps, and prerequisites are provided in the Documentation folder in the root.
 At a high level:  
-1. Configure Raspberry Pi to send DHT11 readings to Azure IoT Hub.  
-2. Deploy Event Hub + Function App in Azure.  
-3. Set up Cosmos DB + SignalR connections.  
-4. Upload the static HTML dashboard to Azure Storage.  
-5. Open the dashboard to see real-time updates!  
+1. Clone the repo
+2. Make sure that you have Terraform installed and Azure CLI
+3. Open a terminal and log into a valid Azure account with a subscription
+4. Go into the terraform file
+5. Run terraform init
+6. Run terraform plan
+7. Run terraform apply
+8. Next go into your function folder and run this
+```bash
+func azure functionapp publish Temp-Reader-Function(RandomID_assigned_by_terraform) --python
+```
+it might take a couple tries but it will start up
+ 
 
 ---
 
