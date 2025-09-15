@@ -59,8 +59,6 @@ it might take a couple tries but it will start up
 ---
 
 ## 📚 Future Improvements
-- Add **Terraform scripts** to provision the full pipeline automatically.  
-- Extend the dashboard with **charts/graphs** (e.g., Plotly, Chart.js).  
 - Expand to multiple devices with authentication & role-based access.  
 
 ---
