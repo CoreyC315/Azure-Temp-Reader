@@ -49,7 +49,10 @@ At a high level:
 5. Run terraform init
 6. Run terraform plan
 7. Run terraform apply
-8. Next go into your function folder and run this
+8. Next go into the IOT Hub to register the device. Make sure that it is called raspberrypi-dht11
+9. Get the connection string from the device
+10. Connect to your pi and edit the script where it asks for the connections string and put the new connection string there and run it. You should see messages are sent to the device
+11. Next go into your function folder and run this
 ```bash
 func azure functionapp publish Temp-Reader-Function(RandomID_assigned_by_terraform) --python
 ```
